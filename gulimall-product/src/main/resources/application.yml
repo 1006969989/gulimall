@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+  application:
+    name: gulimall-product
+  cloud:
+    #阿里云的子系统用户名和密码
+    alicloud:
+      access-key: LTAI5tL2Q2HXegQwf9qr4L3S
+      secret-key: W8xfUZLTvAtanXBDyITqH2H9dFMgzP
+      oss:
+        endpoint: oss-cn-beijing.aliyuncs.com
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+server:
+  port: 8090
