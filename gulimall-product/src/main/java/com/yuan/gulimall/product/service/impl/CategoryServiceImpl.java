@@ -1,5 +1,7 @@
 package com.yuan.gulimall.product.service.impl;
 
+import com.yuan.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,11 +19,14 @@ import com.yuan.common.utils.Query;
 import com.yuan.gulimall.product.dao.CategoryDao;
 import com.yuan.gulimall.product.entity.CategoryEntity;
 import com.yuan.gulimall.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<CategoryEntity> page = this.page(
@@ -77,6 +82,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //进行一个逆序排列
         Collections.reverse(parentPath);
         return (Long[]) parentPath.toArray(new Long[parentPath.size()]);
+    }
+
+    @Transactional
+    @Override
+    public void updateCascade(CategoryEntity category) {
+        this.baseMapper.updateById(category);
+        categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
     }
 
     private List<Long> findParentPath(Long catelogId, List<Long> paths) {
