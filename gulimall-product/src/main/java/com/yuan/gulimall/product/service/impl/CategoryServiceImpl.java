@@ -2,6 +2,8 @@ package com.yuan.gulimall.product.service.impl;
 
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,7 +38,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         List<CategoryEntity> categoryEntityList = baseMapper.selectList(null);
         //2.设置子菜单
         List<CategoryEntity> treeEntity = categoryEntityList.stream().filter((category) ->{
-             return category.getParentCid().longValue() == 0;
+             return category.getParentCid() == 0 ;
         }).map((category) -> {
             category.setChildren(setChildren(category, categoryEntityList));
             return category;
@@ -56,7 +58,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     private List<CategoryEntity> setChildren(CategoryEntity root,List<CategoryEntity> all){
 
         List<CategoryEntity> categoryList = all.stream().filter((category) -> {
-            return category.getParentCid().longValue() == root.getCatId().longValue();
+            return category.getParentCid().equals(root.getCatId());
         }).map((category) -> {
             category.setChildren(setChildren(category, all));
             return category;
@@ -66,4 +68,26 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return categoryList;
     }
 
+    //[2,29,20]
+    @Override
+    public Long[] findCatelogPath(Long catelogId) {
+        List<Long> paths = new ArrayList<>();
+        //递归查询是否还有父节点
+        List<Long> parentPath = findParentPath(catelogId, paths);
+        //进行一个逆序排列
+        Collections.reverse(parentPath);
+        return (Long[]) parentPath.toArray(new Long[parentPath.size()]);
+    }
+
+    private List<Long> findParentPath(Long catelogId, List<Long> paths) {
+        //1、收集当前节点id
+        paths.add(catelogId);
+        //根据当前分类id查询信息
+        CategoryEntity byId = this.getById(catelogId);
+        //如果当前不是父分类
+        if (byId.getParentCid() != 0) {
+            findParentPath(byId.getParentCid(), paths);
+        }
+        return paths;
+    }
 }
