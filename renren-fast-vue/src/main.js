@@ -10,6 +10,10 @@ import '@/assets/scss/index.scss'
 import httpRequest from '@/utils/httpRequest' // api: https://github.com/axios/axios
 import { isAuth } from '@/utils'
 import cloneDeep from 'lodash/cloneDeep'
+// 导入
+import PubSub from 'pubsub-js'
+// 挂载全局
+Vue.prototype.PubSub = PubSub
 
 Vue.use(VueCookie)
 Vue.config.productionTip = false
