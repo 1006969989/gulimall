@@ -9,10 +9,10 @@ spring:
   cloud:
     #阿里云的子系统用户名和密码
     alicloud:
-      access-key: LTAI5tL2Q2HXegQwf9qr4L3S
-      secret-key: W8xfUZLTvAtanXBDyITqH2H9dFMgzP
+      access-key:
+      secret-key:
       oss:
-        endpoint: oss-cn-beijing.aliyuncs.com
+        endpoint:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
 mybatis-plus:
