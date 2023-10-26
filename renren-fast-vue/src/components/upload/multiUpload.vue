@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-upload
-      action="http://oss-cn-beijing.aliyuncs.com"
+      action="http://yuan-1006969989.oss-cn-beijing.aliyuncs.com"
       :data="dataObj"
       list-type="picture-card"
       :file-list="fileList"
@@ -80,7 +80,7 @@ export default {
         policy()
           .then(response => {
             // eslint-disable-next-line no-template-curly-in-string
-            console.log('这是什么${filename}')
+            console.log(response.data)
             _self.dataObj.policy = response.data.policy
             _self.dataObj.signature = response.data.signature
             _self.dataObj.ossaccessKeyId = response.data.accessid

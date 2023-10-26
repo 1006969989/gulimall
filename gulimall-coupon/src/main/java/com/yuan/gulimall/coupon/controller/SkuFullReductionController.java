@@ -3,6 +3,7 @@ package com.yuan.gulimall.coupon.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.yuan.common.to.SkuReductionTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,15 @@ public class SkuFullReductionController {
     @Autowired
     private SkuFullReductionService skuFullReductionService;
 
+    /**
+     * 保存所有优惠信息
+     */
+    @RequestMapping("/saveInfo")
+    //@RequiresPermissions("coupon:skufullreduction:save")
+    public R saveInfo(@RequestBody SkuReductionTo skuReductionTo){
+        skuFullReductionService.saveInfo(skuReductionTo);
+        return R.ok();
+    }
     /**
      * 列表
      */
