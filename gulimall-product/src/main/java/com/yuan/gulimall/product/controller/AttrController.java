@@ -1,8 +1,11 @@
 package com.yuan.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.yuan.gulimall.product.entity.ProductAttrValueEntity;
+import com.yuan.gulimall.product.service.ProductAttrValueService;
 import com.yuan.gulimall.product.vo.AttrRespVo;
 import com.yuan.gulimall.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,9 @@ public class AttrController {
     @Autowired
     private AttrService attrService;
 
+    @Autowired
+    ProductAttrValueService productAttrValueService;
+
     /**
      * 列表
      */
@@ -37,6 +43,30 @@ public class AttrController {
         PageUtils page = attrService.queryPage(params);
 
         return R.ok().put("page", page);
+    }
+
+    /**
+     *  获取spu规格
+     */
+    @GetMapping("/base/listforspu/{spuId}")
+    public R baseAttrlistforspu(@PathVariable("spuId") Long spuId){
+
+        List<ProductAttrValueEntity> entities = productAttrValueService.baseAttrListforspu(spuId);
+
+        return R.ok().put("data",entities);
+    }
+    /**
+     *  修改spu规格
+     */
+    ///product/attr/update/{spuId}
+    @PostMapping("/update/{spuId}")
+    //@RequiresPermissions("product:attr:update")
+    public R updateSpuAttr(@PathVariable("spuId") Long spuId,
+                           @RequestBody List<ProductAttrValueEntity> entities){
+
+        productAttrValueService.updateSpuAttr(spuId,entities);
+
+        return R.ok();
     }
 
     /**
