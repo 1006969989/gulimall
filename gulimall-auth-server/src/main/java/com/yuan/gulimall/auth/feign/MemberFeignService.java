@@ -1,6 +1,7 @@
 package com.yuan.gulimall.auth.feign;
 
 import com.yuan.common.utils.R;
+import com.yuan.gulimall.auth.vo.SocialUser;
 import com.yuan.gulimall.auth.vo.UserLoginVo;
 import com.yuan.gulimall.auth.vo.UserRegisterVo;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -19,8 +20,8 @@ public interface MemberFeignService {
     @PostMapping(value = "/member/member/login")
     R login(@RequestBody UserLoginVo vo);
 
-    /*@PostMapping(value = "/member/member/oauth2/login")
-    R oauthLogin(@RequestBody SocialUser socialUser) throws Exception;*/
+    @PostMapping(value = "/member/member/oauth2/login")
+    R oauthLogin(@RequestBody SocialUser socialUser) throws Exception;
 
     @PostMapping(value = "/member/member/weixin/login")
     R weixinLogin(@RequestParam("accessTokenInfo") String accessTokenInfo);
