@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.yuan.common.constant.AuthServerConstant.LOGIN_USER;
 
 
 @Slf4j
@@ -63,7 +64,7 @@ public class OAuth2Controller {
                 //以后浏览器访问哪个网站就会带上这个网站的cookie
                 //TODO 1、默认发的令牌。当前域（解决子域session共享问题）
                 //TODO 2、使用JSON的序列化方式来序列化对象到Redis中
-                //session.setAttribute(LOGIN_USER,data);
+                session.setAttribute(LOGIN_USER,data);
 
                 //2、登录成功跳回首页
                 return "redirect:http://gulimall.com";
