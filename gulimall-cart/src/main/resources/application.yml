@@ -1,17 +1,15 @@
+server:
+  port: 8098
 spring:
-  application:
-    name: gulimall-search
   cloud:
     nacos:
       discovery:
         server-addr: 127.0.0.1:1001
-  thymeleaf:
-    cache: false
+  application:
+    name: gulimall-cart
   redis:
     host: localhost
     port: 6379
     password: 123456
   session:
     store-type: redis
-server:
-  port: 8097
