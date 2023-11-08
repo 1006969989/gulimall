@@ -8,6 +8,7 @@ import com.yuan.gulimall.cart.interceptor.CartInterceptor;
 import com.yuan.gulimall.cart.service.CartService;
 import com.yuan.gulimall.cart.to.UserInfoTo;
 import com.yuan.gulimall.cart.vo.CartItemVo;
+import com.yuan.gulimall.cart.vo.CartVo;
 import com.yuan.gulimall.cart.vo.SkuInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -16,10 +17,13 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 import static com.yuan.common.constant.CartConstant.CART_PREFIX;
 
@@ -99,6 +103,146 @@ public class CartServiceImpl implements CartService {
 
         return cartItemVo;
     }
+
+    @Override
+    public List<CartItemVo> getUserCartItems() {
+
+        /*List<CartItemVo> cartItemVoList = new ArrayList<>();
+        //获取当前用户登录的信息
+        UserInfoTo userInfoTo = CartInterceptor.toThreadLocal.get();
+        //如果用户未登录直接返回null
+        if (userInfoTo.getUserId() == null) {
+            return null;
+        } else {
+            //获取购物车项
+            String cartKey = CART_PREFIX + userInfoTo.getUserId();
+            //获取所有的
+            List<CartItemVo> cartItems = getCartItems(cartKey);
+            if (cartItems == null) {
+                throw new CartExceptionHandler();
+            }
+            //筛选出选中的
+            cartItemVoList = cartItems.stream()
+                    .filter(items -> items.getCheck())
+                    .map(item -> {
+                        //更新为最新的价格（查询数据库）
+                        BigDecimal price = productFeignService.getPrice(item.getSkuId());
+                        item.setPrice(price);
+                        return item;
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        return cartItemVoList;*/
+        return null;
+    }
+
+    @Override
+    public CartVo getCart() throws InterruptedException, ExecutionException {
+
+        CartVo cartVo = new CartVo();
+        UserInfoTo userInfoTo = CartInterceptor.toThreadLocal.get();
+        if (userInfoTo.getUserId() != null) {
+            //1、登录
+            String cartKey = CART_PREFIX + userInfoTo.getUserId();
+            //临时购物车的键
+            String temptCartKey = CART_PREFIX + userInfoTo.getUserKey();
+
+            //2、如果临时购物车的数据还未进行合并
+            List<CartItemVo> tempCartItems = getCartItems(temptCartKey);
+            if (tempCartItems != null) {
+                //临时购物车有数据需要进行合并操作
+                for (CartItemVo item : tempCartItems) {
+                    addToCart(item.getSkuId(),item.getCount());
+                }
+                //清除临时购物车的数据
+                clearCartInfo(temptCartKey);
+            }
+
+            //3、获取登录后的购物车数据【包含合并过来的临时购物车的数据和登录后购物车的数据】
+            List<CartItemVo> cartItems = getCartItems(cartKey);
+            cartVo.setItems(cartItems);
+
+        } else {
+            //没登录
+            String cartKey = CART_PREFIX + userInfoTo.getUserKey();
+            //获取临时购物车里面的所有购物项
+            List<CartItemVo> cartItems = getCartItems(cartKey);
+            cartVo.setItems(cartItems);
+        }
+
+        return cartVo;
+    }
+
+    @Override
+    public void clearCartInfo(String cartKey) {
+        redisTemplate.delete(cartKey);
+    }
+    /**
+     * 勾选购物项
+     * @param skuId
+     * @param check
+     */
+    @Override
+    public void checkItem(Long skuId, Integer check) {
+        //查询购物车里面的商品
+        CartItemVo cartItem = getCartItem(skuId);
+        //修改商品状态
+        cartItem.setCheck(check == 1?true:false);
+
+        //序列化存入redis中
+        String redisValue = JSON.toJSONString(cartItem);
+
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        cartOps.put(skuId.toString(),redisValue);
+    }
+    /**
+     * 修改购物项数量
+     * @param skuId
+     * @param num
+     */
+    @Override
+    public void changeItemCount(Long skuId, Integer num) {
+        //查询购物车里面的商品
+        CartItemVo cartItem = getCartItem(skuId);
+        cartItem.setCount(num);
+
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        //序列化存入redis中
+        String redisValue = JSON.toJSONString(cartItem);
+        cartOps.put(skuId.toString(),redisValue);
+    }
+    /**
+     * 删除购物项
+     * @param skuId
+     */
+    @Override
+    public void deleteIdCartInfo(Integer skuId) {
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        cartOps.delete(skuId.toString());
+    }
+
+    /**
+     * 获取购物车里面的数据
+     * @param cartKey
+     * @return
+     */
+    private List<CartItemVo> getCartItems(String cartKey) {
+        //获取购物车里面的所有商品
+        BoundHashOperations<String, Object, Object> operations = redisTemplate.boundHashOps(cartKey);
+        List<Object> values = operations.values();
+        if (values != null && values.size() > 0) {
+            List<CartItemVo> cartItemVoStream = values.stream().map((obj) -> {
+                String str = (String) obj;
+                CartItemVo cartItem = JSON.parseObject(str, CartItemVo.class);
+                return cartItem;
+            }).collect(Collectors.toList());
+            return cartItemVoStream;
+        }
+        return null;
+
+    }
+
 
     /**
      * 获取到我们要操作的购物车

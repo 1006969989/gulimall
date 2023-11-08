@@ -1,6 +1,7 @@
 package com.yuan.gulimall.cart.interceptor;
 
 
+import com.yuan.common.vo.MemberResponseVo;
 import com.yuan.gulimall.cart.to.UserInfoTo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
+import static com.yuan.common.constant.AuthServerConstant.LOGIN_USER;
 import static com.yuan.common.constant.CartConstant.TEMP_USER_COOKIE_NAME;
 import static com.yuan.common.constant.CartConstant.TEMP_USER_COOKIE_TIMEOUT;
 
@@ -36,12 +38,12 @@ public class CartInterceptor implements HandlerInterceptor {
 
         HttpSession session = request.getSession();
         //获得当前登录用户的信息
-       /* MemberResponseVo memberResponseVo = (MemberResponseVo) session.getAttribute(LOGIN_USER);
+        MemberResponseVo memberResponseVo = (MemberResponseVo) session.getAttribute(LOGIN_USER);
 
         if (memberResponseVo != null) {
             //用户登录了
             userInfoTo.setUserId(memberResponseVo.getId());
-        }*/
+        }
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {

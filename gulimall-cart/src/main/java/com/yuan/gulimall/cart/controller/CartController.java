@@ -4,6 +4,7 @@ import com.yuan.gulimall.cart.interceptor.CartInterceptor;
 import com.yuan.gulimall.cart.service.CartService;
 import com.yuan.gulimall.cart.to.UserInfoTo;
 import com.yuan.gulimall.cart.vo.CartItemVo;
+import com.yuan.gulimall.cart.vo.CartVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,14 +28,14 @@ public class CartController {
      * 获取当前用户的购物车商品项
      * @return
      */
-   /* @GetMapping(value = "/currentUserCartItems")
+    @GetMapping(value = "/currentUserCartItems")
     @ResponseBody
     public List<CartItemVo> getCurrentCartItems() {
 
         List<CartItemVo> cartItemVoList = cartService.getUserCartItems();
 
         return cartItemVoList;
-    }*/
+    }
 
     /**
      * 去购物车页面的请求
@@ -53,8 +54,8 @@ public class CartController {
         //快速得到用户信息：id,user-key
         UserInfoTo userInfoTo = CartInterceptor.toThreadLocal.get();
         System.out.println(userInfoTo);
-        //CartVo cartVo = cartService.getCart();
-        //model.addAttribute("cart",cartVo);
+        CartVo cartVo = cartService.getCart();
+        model.addAttribute("cart",cartVo);
         return "cartList";
     }
 
@@ -99,7 +100,7 @@ public class CartController {
      * @param checked
      * @return
      */
-   /* @GetMapping(value = "/checkItem")
+    @GetMapping(value = "/checkItem")
     public String checkItem(@RequestParam(value = "skuId") Long skuId,
                             @RequestParam(value = "checked") Integer checked) {
 
@@ -107,7 +108,7 @@ public class CartController {
 
         return "redirect:http://cart.gulimall.com/cart.html";
 
-    }*/
+    }
 
 
     /**
@@ -116,14 +117,14 @@ public class CartController {
      * @param num
      * @return
      */
-   /* @GetMapping(value = "/countItem")
+   @GetMapping(value = "/countItem")
     public String countItem(@RequestParam(value = "skuId") Long skuId,
                             @RequestParam(value = "num") Integer num) {
 
         cartService.changeItemCount(skuId,num);
 
         return "redirect:http://cart.gulimall.com/cart.html";
-    }*/
+    }
 
 
     /**
@@ -131,13 +132,13 @@ public class CartController {
      * @param skuId
      * @return
      */
-   /* @GetMapping(value = "/deleteItem")
+    @GetMapping(value = "/deleteItem")
     public String deleteItem(@RequestParam("skuId") Integer skuId) {
 
         cartService.deleteIdCartInfo(skuId);
 
         return "redirect:http://cart.gulimall.com/cart.html";
 
-    }*/
+    }
 
 }
