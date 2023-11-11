@@ -107,7 +107,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CartItemVo> getUserCartItems() {
 
-        /*List<CartItemVo> cartItemVoList = new ArrayList<>();
+        List<CartItemVo> cartItemVoList = new ArrayList<>();
         //获取当前用户登录的信息
         UserInfoTo userInfoTo = CartInterceptor.toThreadLocal.get();
         //如果用户未登录直接返回null
@@ -119,7 +119,7 @@ public class CartServiceImpl implements CartService {
             //获取所有的
             List<CartItemVo> cartItems = getCartItems(cartKey);
             if (cartItems == null) {
-                throw new CartExceptionHandler();
+                //throw new CartExceptionHandler();
             }
             //筛选出选中的
             cartItemVoList = cartItems.stream()
@@ -133,8 +133,7 @@ public class CartServiceImpl implements CartService {
                     .collect(Collectors.toList());
         }
 
-        return cartItemVoList;*/
-        return null;
+        return cartItemVoList;
     }
 
     @Override
