@@ -34,7 +34,7 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 server:
-  port: 8091
+  port: 8093
 logging:
   level:
     com.yuan: debug
