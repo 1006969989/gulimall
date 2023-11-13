@@ -1,6 +1,7 @@
 package com.yuan.gulimall.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yuan.common.to.mq.SeckillOrderTo;
 import com.yuan.common.utils.PageUtils;
 import com.yuan.gulimall.order.entity.OrderEntity;
 import com.yuan.gulimall.order.vo.*;
@@ -59,5 +60,11 @@ public interface OrderService extends IService<OrderEntity> {
      * @return
      */
     String handlePayResult(PayAsyncVo asyncVo);
+
+    /**
+     * 创建秒杀单
+     * @param orderTo
+     */
+    void createSeckillOrder(SeckillOrderTo orderTo);
 }
 

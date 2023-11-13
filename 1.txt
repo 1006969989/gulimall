@@ -1,0 +1,29 @@
+--------------------------------------------------------------------------------
+内网访问主机防火墙
+New-NetFirewallRule -DisplayName "WSL" -Direction Inbound  -InterfaceAlias "vEthernet (WSL)"  -Action Allow
+--------------------------------------------------------------------------------
+docker创建mykibana
+docker run --name mykibana -e ELASTICSEARCH_HOSTS=http://localhost:9200 --network=host -d kibana:7.4.2
+--------------------------------------------------------------------------------
+docker创建nginx
+docker run --network host --name nginx -v /mydata/nginx/html:/usr/share/nginx/html -v /mydata/nginx/logs:/var/log/nginx -v /mydata/nginx/conf:/etc/nginx -v /etc/hosts:/etc/hosts -d nginx:1.10
+--------------------------------------------------------------------------------
+service docker start
+docker start nginx
+docker start mysql
+docker start myredis
+docker start elasticsearch
+
+--------------------------------------------------------------------------------
+#!/bin/bash
+#获取最新的windows主系统ip
+latest_ip=`cat /etc/resolv.conf|grep nameserver|awk '{ print $2}'`
+#拼接域名
+domain="$latest_ip windows.ip"
+#删除原有hosts文件中旧域名
+sed -i '/windows.ip/d' /etc/hosts
+#写入新域名
+echo $domain >> /etc/hosts
+--------------------------------------------------------------------------------
+netstat -ano|findstr 8090
+taskkill /pid 6052 -f

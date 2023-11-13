@@ -23,7 +23,7 @@ mybatis-plus:
     db-config:
       id-type: auto
 server:
-  port: 11000
+  port: 9002
 logging:
   level:
     com.yuan: debug

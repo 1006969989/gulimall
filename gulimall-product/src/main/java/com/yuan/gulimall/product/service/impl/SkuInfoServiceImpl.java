@@ -1,8 +1,12 @@
 package com.yuan.gulimall.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
+import com.yuan.common.utils.R;
 import com.yuan.gulimall.product.entity.SkuImagesEntity;
 import com.yuan.gulimall.product.entity.SpuInfoDescEntity;
+import com.yuan.gulimall.product.feign.SeckillFeignService;
 import com.yuan.gulimall.product.service.*;
+import com.yuan.gulimall.product.vo.SeckillSkuVo;
 import com.yuan.gulimall.product.vo.SkuItemSaleAttrVo;
 import com.yuan.gulimall.product.vo.SkuItemVo;
 import com.yuan.gulimall.product.vo.SpuItemAttrGroupVo;
@@ -45,8 +49,8 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     @Resource
     private SkuSaleAttrValueService skuSaleAttrValueService;
 
-    //@Autowired
-    //private SeckillFeignService seckillFeignService;
+    @Autowired
+    private SeckillFeignService seckillFeignService;
 
     @Resource
     private ThreadPoolExecutor executor;
@@ -168,7 +172,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             skuItemVo.setImages(imagesEntities);
         }, executor);
 
-       /* CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
+        CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
             //3、远程调用查询当前sku是否参与秒杀优惠活动
             R skuSeckilInfo = seckillFeignService.getSkuSeckilInfo(skuId);
             if (skuSeckilInfo.getCode() == 0) {
@@ -184,11 +188,11 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
                     }
                 }
             }
-        }, executor);*/
+        }, executor);
 
         //等到所有任务都完成
         try {
-            CompletableFuture.allOf(saleAttrFuture,descFuture,baseAttrFuture,imageFuture).get();
+            CompletableFuture.allOf(saleAttrFuture,descFuture,baseAttrFuture,imageFuture,seckillFuture).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
